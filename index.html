@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ใบสำคัญจ่าย – พี่พงศ์</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2744;
+    --navy2: #243460;
+    --blue: #2d5be3;
+    --blue-light: #e8edfb;
+    --gold: #c9993a;
+    --gold-light: #fdf6e3;
+    --gray0: #f8f9fc;
+    --gray1: #f0f2f8;
+    --gray2: #dde2ef;
+    --gray3: #9aa3bf;
+    --text: #1a2744;
+    --red: #c0392b;
+    --green: #27ae60;
+    --ot-bg: #fff8e1;
+    --ot-border: #f0c040;
+    --half-bg: #fce4ec;
+    --half-border: #e57373;
+    --paid-bg: #e8f5e9;
+    --paid-border: #66bb6a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: #e9ecf5;
+    min-height: 100vh;
+    padding: 0;
+    color: var(--text);
+  }
+
+  /* TOOLBAR */
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--navy);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.3);
+  }
+  .toolbar-title {
+    font-size: 14px;
+    color: rgba(255,255,255,.7);
+    font-weight: 500;
+    letter-spacing: .5px;
+    flex: 1;
+  }
+  .toolbar-title span { color: #fff; font-weight: 700; }
+  .btn {
+    border: none; cursor: pointer; font-family: 'Sarabun', sans-serif;
+    font-size: 13px; font-weight: 600; border-radius: 6px;
+    padding: 7px 16px; transition: all .15s ease; display: flex; align-items: center; gap: 6px;
+  }
+  .btn-add { background: #2d5be3; color: #fff; }
+  .btn-add:hover { background: #1d4ac7; }
+  .btn-del { background: #c0392b; color: #fff; }
+  .btn-del:hover { background: #a93226; }
+  .btn-print { background: var(--gold); color: #fff; }
+  .btn-print:hover { background: #b8862e; }
+  .btn-sec { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.2); }
+  .btn-sec:hover { background: rgba(255,255,255,.22); }
+  .sep { width: 1px; height: 28px; background: rgba(255,255,255,.15); }
+
+  /* PAGE */
+  .page-wrap {
+    max-width: 960px;
+    margin: 32px auto;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(26,39,68,.18);
+  }
+
+  /* HEADER BLOCK */
+  .doc-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+    padding: 32px 40px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .doc-header::before {
+    content: '';
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    border: 40px solid rgba(255,255,255,.05);
+  }
+  .doc-header::after {
+    content: '';
+    position: absolute;
+    right: 60px; top: 80px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    border: 20px solid rgba(255,255,255,.04);
+  }
+  .doc-title {
+    font-size: 30px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+    line-height: 1.1;
+  }
+  .doc-subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,.55);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .doc-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .meta-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .meta-label {
+    font-size: 10px;
+    color: rgba(255,255,255,.45);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .meta-value {
+    font-size: 14px;
+    color: #fff;
+    font-weight: 600;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 6px;
+    padding: 6px 10px;
+    outline: none;
+    font-family: 'Sarabun', sans-serif;
+    cursor: text;
+    transition: background .15s, border-color .15s;
+  }
+  .meta-value:focus {
+    background: rgba(255,255,255,.16);
+    border-color: rgba(255,255,255,.4);
+  }
+
+  /* LEGEND */
+  .legend-bar {
+    background: var(--gray0);
+    border-bottom: 1px solid var(--gray2);
+    padding: 10px 40px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot {
+    width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0;
+  }
+
+  /* CONTENT */
+  .content { padding: 0 40px 40px; }
+
+  /* MONTH SECTION */
+  .month-section { margin-top: 32px; }
+  .month-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--navy);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px 8px 0 0;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .3px;
+  }
+  .month-header-left { display: flex; align-items: center; gap: 10px; }
+  .month-badge {
+    background: rgba(255,255,255,.15);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: .5px;
+  }
+  .month-header-title {
+    outline: none;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    min-width: 200px;
+    cursor: text;
+  }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  thead th {
+    background: var(--blue-light);
+    color: var(--navy);
+    font-weight: 700;
+    padding: 9px 10px;
+    text-align: center;
+    border: 1px solid var(--gray2);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    white-space: nowrap;
+  }
+  thead th.col-desc { text-align: left; }
+
+  tbody tr { transition: background .1s; }
+  tbody tr:hover td { background: #f0f4ff !important; }
+
+  td {
+    border: 1px solid var(--gray2);
+    padding: 7px 10px;
+    vertical-align: middle;
+  }
+  td[contenteditable="true"] {
+    outline: none;
+    cursor: text;
+    position: relative;
+  }
+  td[contenteditable="true"]:focus {
+    background: #fffde7 !important;
+    box-shadow: inset 0 0 0 2px var(--gold);
+    z-index: 1;
+  }
+
+  .col-no { width: 36px; text-align: center; color: var(--gray3); font-size: 12px; font-family: 'IBM Plex Mono', monospace; }
+  .col-date { width: 90px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; }
+  .col-desc { min-width: 200px; }
+  .col-days { width: 60px; text-align: center; font-family: 'IBM Plex Mono', monospace; }
+  .col-amt  { width: 120px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--navy); }
+  .col-note { width: 110px; font-size: 12px; color: var(--gray3); }
+  .col-action { width: 36px; text-align: center; }
+
+  /* Row types */
+  tr.row-normal td { background: #fff; }
+  tr.row-stripe td { background: var(--gray0); }
+  tr.row-ot td { background: var(--ot-bg); }
+  tr.row-ot td.col-note { color: var(--gold); font-weight: 700; }
+  tr.row-half td { background: var(--half-bg); }
+  tr.row-half td.col-note { color: var(--red); font-weight: 600; }
+  tr.row-paid td { background: var(--paid-bg); opacity: .75; }
+  tr.row-paid td.col-note { color: var(--green); font-weight: 600; }
+
+  /* OT tag */
+  .ot-tag {
+    display: inline-block;
+    background: var(--gold);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    vertical-align: middle;
+    letter-spacing: .5px;
+    pointer-events: none;
+  }
+  .half-tag {
+    display: inline-block;
+    background: var(--red);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    vertical-align: middle;
+    letter-spacing: .5px;
+    pointer-events: none;
+  }
+  .paid-tag {
+    display: inline-block;
+    background: var(--green);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    vertical-align: middle;
+    letter-spacing: .5px;
+    pointer-events: none;
+  }
+
+  /* Subtotal row */
+  tr.row-subtotal td {
+    background: var(--navy2);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 9px 10px;
+  }
+  tr.row-subtotal td.col-amt {
+    color: #fff;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+  }
+
+  /* Delete btn in rows */
+  .row-del-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--gray3); font-size: 16px; line-height: 1;
+    padding: 2px 4px; border-radius: 4px; transition: all .15s;
+    font-weight: 700;
+  }
+  .row-del-btn:hover { color: var(--red); background: #fdecea; }
+
+  /* Type selector pill */
+  .type-selector {
+    display: flex; gap: 4px; padding: 4px; background: var(--gray1);
+    border-radius: 8px; width: fit-content;
+  }
+  .type-btn {
+    border: none; cursor: pointer; font-family: 'Sarabun', sans-serif;
+    font-size: 11px; font-weight: 600; border-radius: 5px;
+    padding: 4px 10px; transition: all .12s ease;
+    background: transparent; color: var(--gray3);
+  }
+  .type-btn.active { background: #fff; color: var(--navy); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+
+  /* Add row controls */
+  .add-row-bar {
+    border: 1px dashed var(--gray2);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--gray0);
+    flex-wrap: wrap;
+  }
+  .add-row-bar label { font-size: 12px; color: var(--gray3); font-weight: 600; white-space: nowrap; }
+  .add-input {
+    font-family: 'Sarabun', sans-serif; font-size: 13px;
+    border: 1px solid var(--gray2); border-radius: 5px;
+    padding: 5px 9px; background: #fff; color: var(--text);
+    outline: none; transition: border-color .15s;
+  }
+  .add-input:focus { border-color: var(--blue); }
+  .add-input.date-input { width: 90px; font-family: 'IBM Plex Mono', monospace; }
+  .add-input.desc-input { flex: 1; min-width: 140px; }
+  .add-input.note-input { width: 100px; }
+
+  /* GRAND TOTAL */
+  .grand-total-block {
+    margin-top: 24px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+    border-radius: 10px;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .gt-label { color: rgba(255,255,255,.7); font-size: 13px; font-weight: 600; letter-spacing: .5px; }
+  .gt-sub { color: rgba(255,255,255,.45); font-size: 11px; margin-top: 2px; font-family: 'IBM Plex Mono', monospace; }
+  .gt-amount {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+  .gt-unit { color: rgba(255,255,255,.6); font-size: 14px; font-weight: 600; margin-left: 8px; }
+
+  /* NOTES */
+  .notes-block {
+    margin-top: 20px;
+    background: var(--gold-light);
+    border: 1px solid #e8d5a0;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 12px;
+    color: #7d5a00;
+    line-height: 1.8;
+  }
+  .notes-block strong { color: #5a3e00; }
+
+  /* SIGNATURE */
+  .sig-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray2);
+  }
+  .sig-box { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .sig-label { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .sig-space { height: 56px; width: 100%; border-bottom: 2px solid var(--gray3); position: relative; }
+  .sig-name { font-size: 12px; color: var(--gray3); }
+  .sig-date { font-size: 12px; color: var(--gray3); }
+
+  /* PRINT */
+  @media print {
+    body { background: #fff; padding: 0; }
+    .toolbar { display: none; }
+    .page-wrap { box-shadow: none; border-radius: 0; margin: 0; }
+    .add-row-bar { display: none !important; }
+    .row-del-btn { display: none !important; }
+    .col-action { display: none !important; }
+    td[contenteditable] { outline: none !important; box-shadow: none !important; }
+    .meta-value { background: transparent !important; border-color: rgba(255,255,255,.2) !important; }
+    .month-header-title { cursor: default; }
+    thead th.col-action { display: none !important; }
+  }
+
+  /* Fade-in on load */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .month-section { animation: fadeUp .3s ease both; }
+  .month-section:nth-child(2) { animation-delay: .05s; }
+  .month-section:nth-child(3) { animation-delay: .10s; }
+  .month-section:nth-child(4) { animation-delay: .15s; }
+  .month-section:nth-child(5) { animation-delay: .20s; }
+</style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <span class="toolbar-title">📄 <span>ใบสำคัญจ่าย</span> – สหรุ่งเรืองรายวันพี่พงศ์</span>
+  <button class="btn btn-sec" onclick="addMonth()">+ เพิ่มเดือน</button>
+  <div class="sep"></div>
+  <button class="btn btn-print" onclick="window.print()">🖨 พิมพ์</button>
+</div>
+
+<!-- PAGE -->
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="doc-header">
+    <div class="doc-title">ใบสำคัญจ่าย</div>
+    <div class="doc-subtitle">Payment Voucher</div>
+    <div class="doc-meta">
+      <div class="meta-field">
+        <span class="meta-label">จ่ายให้ / Pay to</span>
+        <div class="meta-value" contenteditable="true">พี่พงศ์  (คนขับรถ 6 ล้อ)</div>
+      </div>
+      <div class="meta-field">
+        <span class="meta-label">ทะเบียน / License</span>
+        <div class="meta-value" contenteditable="true">83-8405</div>
+      </div>
+      <div class="meta-field">
+        <span class="meta-label">สถานที่ / Location</span>
+        <div class="meta-value" contenteditable="true">บ่อขยะ สหรุ่งเรือง</div>
+      </div>
+      <div class="meta-field">
+        <span class="meta-label">อัตราค่าแรง / Rate</span>
+        <div class="meta-value" id="daily-rate" contenteditable="true" oninput="recalcAll()">2300</div>
+      </div>
+      <div class="meta-field">
+        <span class="meta-label">ระยะเวลา / Period</span>
+        <div class="meta-value" contenteditable="true">ธ.ค. 2568 – มี.ค. 2569</div>
+      </div>
+      <div class="meta-field">
+        <span class="meta-label">วันที่ออกเอกสาร / Date</span>
+        <div class="meta-value" contenteditable="true">21 มีนาคม 2569</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend-bar">
+    <strong style="font-size:12px;color:#555;">สัญลักษณ์:</strong>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--ot-bg);border:1px solid var(--ot-border)"></span>วันที่มี OT</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--half-bg);border:1px solid var(--half-border)"></span>ครึ่งวัน</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--paid-bg);border:1px solid var(--paid-border)"></span>จ่ายแล้ว</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#fff;border:1px solid var(--gray2)"></span>ปกติ</span>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div id="months-container"></div>
+
+    <!-- GRAND TOTAL -->
+    <div class="grand-total-block">
+      <div>
+        <div class="gt-label">ยอดรวมทั้งหมด (Grand Total)</div>
+        <div class="gt-sub" id="gt-breakdown">–</div>
+      </div>
+      <div>
+        <span class="gt-amount" id="grand-total-display">0.00</span>
+        <span class="gt-unit">บาท</span>
+      </div>
+    </div>
+
+    <div class="notes-block">
+      <strong>หมายเหตุ:</strong>
+      อัตราค่าแรงปกติ = <strong>2,300 บาท/วัน</strong> &nbsp;|&nbsp;
+      ครึ่งวัน = <strong>1,150 บาท</strong> &nbsp;|&nbsp;
+      วันที่มี OT คิดค่าแรง <strong>2,300 บาท</strong> เท่าเดิม (OT แสดงเป็นหมายเหตุ) &nbsp;|&nbsp;
+      วันที่ 11/12 และ 12/12 จ่ายแล้ว ไม่รวมในใบนี้
+    </div>
+
+    <!-- SIGNATURE -->
+    <div class="sig-section">
+      <div class="sig-box">
+        <div class="sig-label">ผู้รับเงิน</div>
+        <div class="sig-space"></div>
+        <div class="sig-name">(................................)</div>
+        <div class="sig-date">วันที่ ......./......./........</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-label">ผู้จ่ายเงิน</div>
+        <div class="sig-space"></div>
+        <div class="sig-name">(................................)</div>
+        <div class="sig-date">วันที่ ......./......./........</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-label">ผู้อนุมัติ</div>
+        <div class="sig-space"></div>
+        <div class="sig-name">(................................)</div>
+        <div class="sig-date">วันที่ ......./......./........</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const DATA = [
+  {
+    id: 'm1',
+    title: 'ธันวาคม 2568',
+    note: 'ไม่รวม 11/12 และ 12/12 – จ่ายแล้ว',
+    rows: [
+      { date:'11/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'paid', note:'จ่ายแล้ว' },
+      { date:'12/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'paid', note:'จ่ายแล้ว' },
+      { date:'13/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'16/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'ot',     note:'OT 17:00-20:00 น. (3 ชม.)' },
+      { date:'22/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'23/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'24/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'ot',     note:'OT 17:00-19:00 น. (2 ชม.)' },
+      { date:'25/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+    ]
+  },
+  {
+    id: 'm2',
+    title: 'มกราคม 2569',
+    note: '',
+    rows: [
+      { date:'10/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'13/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'15/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'18/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'19/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'20/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'24/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'half',   note:'ครึ่งวัน' },
+      { date:'26/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'27/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'28/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'29/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'31/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+    ]
+  },
+  {
+    id: 'm3',
+    title: 'กุมภาพันธ์ 2569',
+    note: '',
+    rows: [
+      { date:'1/2/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'3/2/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'4/2/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'5/2/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'9/2/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'10/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'11/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'12/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'13/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'14/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'15/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'16/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'17/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'18/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'19/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'half',   note:'ครึ่งวัน' },
+      { date:'20/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'21/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'23/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'25/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'half',   note:'ครึ่งวัน – รถเพลาขาด' },
+      { date:'26/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'27/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+    ]
+  },
+  {
+    id: 'm4',
+    title: 'มีนาคม 2569',
+    note: '',
+    rows: [
+      { date:'1/3/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'2/3/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'4/3/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'10/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'11/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'12/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'14/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'15/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'16/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'17/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'18/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+      { date:'20/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
+    ]
+  }
+];
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function getDailyRate() {
+  const v = parseFloat(document.getElementById('daily-rate').innerText.replace(/,/g,''));
+  return isNaN(v) ? 2300 : v;
+}
+
+function rowAmount(type) {
+  const d = getDailyRate();
+  if (type === 'half') return d / 2;
+  if (type === 'paid') return 0;
+  return d; // normal & ot = full daily rate
+}
+
+function fmt(n) {
+  return n.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function rowClass(type, idx) {
+  if (type === 'ot') return 'row-ot';
+  if (type === 'half') return 'row-half';
+  if (type === 'paid') return 'row-paid';
+  return idx % 2 === 0 ? 'row-normal' : 'row-stripe';
+}
+
+function typeTag(type) {
+  if (type === 'ot') return '<span class="ot-tag">OT</span>';
+  if (type === 'half') return '<span class="half-tag">½</span>';
+  if (type === 'paid') return '<span class="paid-tag">✓ จ่ายแล้ว</span>';
+  return '';
+}
+
+function daysLabel(type) {
+  if (type === 'half') return '½';
+  if (type === 'paid') return '–';
+  return '1';
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  const container = document.getElementById('months-container');
+  container.innerHTML = '';
+
+  DATA.forEach((month, mi) => {
+    const sec = document.createElement('div');
+    sec.className = 'month-section';
+    sec.dataset.mid = month.id;
+
+    // Count billable days for badge
+    const billable = month.rows.filter(r => r.type !== 'paid');
+    const halfCount = billable.filter(r => r.type === 'half').length;
+    const fullCount = billable.filter(r => r.type !== 'half').length;
+    const subtotal = month.rows.reduce((s,r) => s + rowAmount(r.type), 0);
+
+    let badgeText = `${fullCount} วัน`;
+    if (halfCount) badgeText += ` + ${halfCount} ครึ่งวัน`;
+
+    // Build table rows HTML
+    let rowsHtml = '';
+    let displayNo = 0;
+    month.rows.forEach((r, ri) => {
+      if (r.type !== 'paid') displayNo++;
+      const noLabel = r.type === 'paid' ? '–' : displayNo;
+      const amt = rowAmount(r.type);
+      const amtDisplay = r.type === 'paid' ? '–' : fmt(amt);
+
+      rowsHtml += `
+      <tr class="${rowClass(r.type, ri)}" data-ri="${ri}" data-mid="${month.id}">
+        <td class="col-no">${noLabel}</td>
+        <td class="col-date" contenteditable="true" data-field="date" data-ri="${ri}" data-mid="${month.id}">${r.date}</td>
+        <td class="col-desc" contenteditable="true" data-field="desc" data-ri="${ri}" data-mid="${month.id}">${r.desc}${typeTag(r.type)}</td>
+        <td class="col-days">${daysLabel(r.type)}</td>
+        <td class="col-amt">${amtDisplay}</td>
+        <td class="col-note" contenteditable="true" data-field="note" data-ri="${ri}" data-mid="${month.id}">${r.note}</td>
+        <td class="col-action">
+          <div style="display:flex;flex-direction:column;gap:2px;align-items:center;">
+            <button class="row-del-btn" onclick="deleteRow('${month.id}',${ri})" title="ลบแถว">×</button>
+            <select style="font-size:10px;border:1px solid #dde;border-radius:4px;padding:1px;background:#fff;cursor:pointer;max-width:48px;color:#333" onchange="changeType('${month.id}',${ri},this.value)" title="เปลี่ยนประเภท">
+              <option value="normal" ${r.type==='normal'?'selected':''}>ปกติ</option>
+              <option value="ot"     ${r.type==='ot'?'selected':''}>OT</option>
+              <option value="half"   ${r.type==='half'?'selected':''}>½วัน</option>
+              <option value="paid"   ${r.type==='paid'?'selected':''}>จ่าย</option>
+            </select>
+          </div>
+        </td>
+      </tr>`;
+    });
+
+    sec.innerHTML = `
+      <div class="month-header">
+        <div class="month-header-left">
+          <span class="month-badge">${mi+1}</span>
+          <span class="month-header-title" contenteditable="true" data-mid="${month.id}" data-field="title">${month.title}</span>
+          ${month.note ? `<span style="font-size:11px;opacity:.6;font-weight:400">${month.note}</span>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;opacity:.65;font-family:'IBM Plex Mono',monospace">${badgeText}</span>
+          <button class="btn btn-del" onclick="deleteMonth('${month.id}')" style="padding:4px 10px;font-size:12px">× ลบเดือน</button>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th class="col-no">ที่</th>
+            <th class="col-date">วันที่</th>
+            <th class="col-desc col-action-hide">รายการ / สถานที่</th>
+            <th class="col-days">วัน</th>
+            <th class="col-amt">จำนวนเงิน (บาท)</th>
+            <th class="col-note">หมายเหตุ</th>
+            <th class="col-action"></th>
+          </tr>
+        </thead>
+        <tbody id="tbody-${month.id}">
+          ${rowsHtml}
+          <tr class="row-subtotal">
+            <td colspan="4" style="text-align:right;padding-right:14px">รวมเดือนนี้</td>
+            <td class="col-amt">${fmt(subtotal)}</td>
+            <td colspan="2"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="add-row-bar">
+        <label>เพิ่มแถว:</label>
+        <input class="add-input date-input" id="add-date-${month.id}" placeholder="วันที่ เช่น 5/4/69">
+        <input class="add-input desc-input" id="add-desc-${month.id}" placeholder="รายการ" value="บ่อขยะ สหรุ่งเรือง">
+        <input class="add-input note-input" id="add-note-${month.id}" placeholder="หมายเหตุ">
+        <select class="add-input" id="add-type-${month.id}" style="width:auto">
+          <option value="normal">ปกติ</option>
+          <option value="ot">OT</option>
+          <option value="half">ครึ่งวัน</option>
+          <option value="paid">จ่ายแล้ว</option>
+        </select>
+        <button class="btn btn-add" onclick="addRow('${month.id}')">+ เพิ่ม</button>
+      </div>
+    `;
+
+    container.appendChild(sec);
+  });
+
+  // Attach contenteditable listeners
+  document.querySelectorAll('[data-field][data-mid]').forEach(el => {
+    el.addEventListener('blur', () => {
+      const mid = el.dataset.mid;
+      const field = el.dataset.field;
+      const ri = el.dataset.ri;
+      const month = DATA.find(m => m.id === mid);
+      if (!month) return;
+      if (field === 'title') {
+        month.title = el.innerText.trim();
+      } else if (ri !== undefined) {
+        // strip any tags before saving text
+        const text = el.innerText.replace(/OT|½|✓ จ่ายแล้ว/g,'').trim();
+        month.rows[parseInt(ri)][field] = text;
+      }
+    });
+  });
+
+  recalcAll();
+}
+
+// ─── ACTIONS ─────────────────────────────────────────────────────────────────
+function deleteRow(mid, ri) {
+  const month = DATA.find(m => m.id === mid);
+  if (!month) return;
+  month.rows.splice(ri, 1);
+  render();
+}
+
+function deleteMonth(mid) {
+  if (!confirm('ลบเดือนนี้?')) return;
+  const idx = DATA.findIndex(m => m.id === mid);
+  if (idx !== -1) DATA.splice(idx, 1);
+  render();
+}
+
+function changeType(mid, ri, newType) {
+  const month = DATA.find(m => m.id === mid);
+  if (!month) return;
+  month.rows[ri].type = newType;
+  // auto-set note defaults
+  if (newType === 'ot' && !month.rows[ri].note) month.rows[ri].note = 'OT';
+  if (newType === 'half' && !month.rows[ri].note) month.rows[ri].note = 'ครึ่งวัน';
+  if (newType === 'paid' && !month.rows[ri].note) month.rows[ri].note = 'จ่ายแล้ว';
+  render();
+}
+
+function addRow(mid) {
+  const month = DATA.find(m => m.id === mid);
+  if (!month) return;
+  const date = document.getElementById(`add-date-${mid}`).value.trim();
+  const desc = document.getElementById(`add-desc-${mid}`).value.trim();
+  const note = document.getElementById(`add-note-${mid}`).value.trim();
+  const type = document.getElementById(`add-type-${mid}`).value;
+  if (!date) { alert('กรุณาระบุวันที่'); return; }
+  month.rows.push({ date, desc: desc || 'บ่อขยะ สหรุ่งเรือง', type, note });
+  render();
+}
+
+function addMonth() {
+  const id = 'm' + Date.now();
+  DATA.push({ id, title: 'เดือนใหม่', note: '', rows: [] });
+  render();
+  setTimeout(() => {
+    const sections = document.querySelectorAll('.month-section');
+    sections[sections.length-1]?.scrollIntoView({ behavior:'smooth', block:'center' });
+  }, 100);
+}
+
+function recalcAll() {
+  let grand = 0;
+  const monthTotals = [];
+  DATA.forEach(month => {
+    const sub = month.rows.reduce((s, r) => s + rowAmount(r.type), 0);
+    grand += sub;
+    monthTotals.push(`${month.title} ${fmt(sub)} บ.`);
+  });
+  document.getElementById('grand-total-display').textContent = fmt(grand);
+  document.getElementById('gt-breakdown').textContent = monthTotals.join('  |  ');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
