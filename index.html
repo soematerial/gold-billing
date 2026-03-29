@@ -2,511 +2,633 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ใบจ่าย">
+<meta name="theme-color" content="#1a2744">
 <title>ใบสำคัญจ่าย – พี่พงศ์</title>
+
+<!-- PWA Icons (inline SVG as data URI) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%231a2744'/%3E%3Crect x='80' y='140' width='352' height='260' rx='16' fill='%232d5be3' opacity='.3'/%3E%3Crect x='100' y='160' width='312' height='220' rx='12' fill='none' stroke='%23c9993a' stroke-width='8'/%3E%3Ctext x='256' y='245' font-family='Arial' font-weight='bold' font-size='72' fill='%23c9993a' text-anchor='middle'%3E%E0%B9%83%E0%B8%9A%3C/text%3E%3Ctext x='256' y='330' font-family='Arial' font-weight='bold' font-size='52' fill='white' text-anchor='middle'%3E%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%231a2744'/%3E%3Ctext x='256' y='320' font-family='Arial' font-weight='bold' font-size='280' fill='%23c9993a' text-anchor='middle'%3E%E0%B9%83%E0%B8%9A%3C/text%3E%3C/svg%3E">
+
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
-  :root {
-    --navy: #1a2744;
-    --navy2: #243460;
-    --blue: #2d5be3;
-    --blue-light: #e8edfb;
-    --gold: #c9993a;
-    --gold-light: #fdf6e3;
-    --gray0: #f8f9fc;
-    --gray1: #f0f2f8;
-    --gray2: #dde2ef;
-    --gray3: #9aa3bf;
-    --text: #1a2744;
-    --red: #c0392b;
-    --green: #27ae60;
-    --ot-bg: #fff8e1;
-    --ot-border: #f0c040;
-    --half-bg: #fce4ec;
-    --half-border: #e57373;
-    --paid-bg: #e8f5e9;
-    --paid-border: #66bb6a;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Sarabun', sans-serif;
-    background: #e9ecf5;
-    min-height: 100vh;
-    padding: 0;
-    color: var(--text);
-  }
+:root {
+  --navy: #1a2744;
+  --navy2: #243460;
+  --blue: #2d5be3;
+  --blue-light: #e8edfb;
+  --gold: #c9993a;
+  --gold-dark: #a67c28;
+  --gold-light: #fdf6e3;
+  --gray0: #f8f9fc;
+  --gray1: #f0f2f8;
+  --gray2: #dde2ef;
+  --gray3: #9aa3bf;
+  --text: #1a2744;
+  --red: #c0392b;
+  --green: #27ae60;
+  --ot-bg: #fff8e1;
+  --half-bg: #fce4ec;
+  --paid-bg: #e8f5e9;
+  --safe: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-  /* TOOLBAR */
-  .toolbar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--navy);
-    padding: 10px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,.3);
-  }
-  .toolbar-title {
-    font-size: 14px;
-    color: rgba(255,255,255,.7);
-    font-weight: 500;
-    letter-spacing: .5px;
-    flex: 1;
-  }
-  .toolbar-title span { color: #fff; font-weight: 700; }
-  .btn {
-    border: none; cursor: pointer; font-family: 'Sarabun', sans-serif;
-    font-size: 13px; font-weight: 600; border-radius: 6px;
-    padding: 7px 16px; transition: all .15s ease; display: flex; align-items: center; gap: 6px;
-  }
-  .btn-add { background: #2d5be3; color: #fff; }
-  .btn-add:hover { background: #1d4ac7; }
-  .btn-del { background: #c0392b; color: #fff; }
-  .btn-del:hover { background: #a93226; }
-  .btn-print { background: var(--gold); color: #fff; }
-  .btn-print:hover { background: #b8862e; }
-  .btn-sec { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.2); }
-  .btn-sec:hover { background: rgba(255,255,255,.22); }
-  .sep { width: 1px; height: 28px; background: rgba(255,255,255,.15); }
+body {
+  font-family: 'Sarabun', sans-serif;
+  background: #e9ecf5;
+  color: var(--text);
+  min-height: 100vh;
+  overscroll-behavior: none;
+}
 
-  /* PAGE */
+/* ─── LOCK SCREEN ─────────────────────────────────────────── */
+#lock-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(15,20,40,.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 0;
+}
+#lock-overlay.show { display: flex; }
+.lock-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 32px 28px;
+  width: min(340px, 90vw);
+  box-shadow: 0 24px 60px rgba(0,0,0,.4);
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+}
+.lock-icon {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, var(--navy), var(--navy2));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; margin-bottom: 18px;
+  box-shadow: 0 8px 24px rgba(26,39,68,.35);
+}
+.lock-title {
+  font-size: 18px; font-weight: 700; color: var(--navy);
+  margin-bottom: 4px;
+}
+.lock-sub {
+  font-size: 13px; color: var(--gray3); margin-bottom: 24px; text-align: center;
+}
+.lock-input {
+  width: 100%;
+  border: 2px solid var(--gray2);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 18px;
+  letter-spacing: 3px;
+  text-align: center;
+  outline: none;
+  transition: border-color .2s;
+  margin-bottom: 14px;
+  color: var(--navy);
+}
+.lock-input:focus { border-color: var(--blue); }
+.lock-input.shake {
+  animation: shake .4s ease;
+  border-color: var(--red);
+}
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-6px)}
+  80%{transform:translateX(6px)}
+}
+.lock-btn {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, var(--navy), var(--navy2));
+  color: #fff; border: none; border-radius: 10px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  transition: opacity .15s;
+}
+.lock-btn:active { opacity: .8; }
+.lock-err {
+  font-size: 12px; color: var(--red); margin-top: 10px;
+  min-height: 16px; text-align: center;
+}
+
+/* ─── TOAST ───────────────────────────────────────────────── */
+#toast {
+  position: fixed; bottom: calc(80px + var(--safe)); left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--navy); color: #fff;
+  padding: 10px 20px; border-radius: 24px;
+  font-size: 13px; font-weight: 600;
+  opacity: 0; transition: all .3s ease;
+  z-index: 999; white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,.3);
+  pointer-events: none;
+}
+#toast.show {
+  opacity: 1; transform: translateX(-50%) translateY(0);
+}
+#toast.ok { background: var(--green); }
+#toast.err { background: var(--red); }
+
+/* ─── TOOLBAR ─────────────────────────────────────────────── */
+.toolbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--navy);
+  padding: 10px 16px;
+  padding-top: max(10px, env(safe-area-inset-top));
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.35);
+}
+.toolbar-logo {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; font-weight: 900; color: #fff;
+  font-family: 'Sarabun', sans-serif;
+  flex-shrink: 0;
+  letter-spacing: -1px;
+}
+.toolbar-title {
+  flex: 1;
+  font-size: 13px; color: rgba(255,255,255,.7);
+  font-weight: 500; overflow: hidden;
+}
+.toolbar-title strong { color: #fff; display: block; font-size: 14px; }
+.toolbar-title span { font-size: 11px; }
+.tb-btn {
+  border: none; cursor: pointer;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 12px; font-weight: 700;
+  border-radius: 8px; padding: 7px 12px;
+  display: flex; align-items: center; gap: 4px;
+  transition: all .15s; white-space: nowrap; flex-shrink: 0;
+}
+.tb-btn-save { background: var(--gold); color: #fff; }
+.tb-btn-save:active { background: var(--gold-dark); }
+.tb-btn-edit { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.2); }
+.tb-btn-edit:active { background: rgba(255,255,255,.22); }
+.tb-btn-print { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.2); }
+.tb-btn-print:active { background: rgba(255,255,255,.22); }
+
+/* Edit mode indicator */
+.edit-badge {
+  display: none;
+  background: var(--gold); color: #fff;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 10px;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+body.edit-mode .edit-badge { display: inline-block; }
+
+/* ─── SYNC STATUS ─────────────────────────────────────────── */
+.sync-bar {
+  background: var(--navy2);
+  padding: 5px 16px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; color: rgba(255,255,255,.6);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.sync-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--gray3); flex-shrink: 0;
+  transition: background .3s;
+}
+.sync-dot.ok { background: var(--green); }
+.sync-dot.loading { background: var(--gold); animation: blink .6s infinite; }
+.sync-dot.err { background: var(--red); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ─── LEGEND ──────────────────────────────────────────────── */
+.legend-bar {
+  background: var(--gray0); border-bottom: 1px solid var(--gray2);
+  padding: 8px 16px; display: flex; gap: 14px;
+  align-items: center; font-size: 11px; flex-wrap: wrap;
+  overflow-x: auto; white-space: nowrap;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+/* ─── PAGE ────────────────────────────────────────────────── */
+.page-wrap {
+  max-width: 720px; margin: 0 auto;
+  background: #fff;
+}
+@media (min-width: 740px) {
   .page-wrap {
-    max-width: 960px;
-    margin: 32px auto;
-    background: #fff;
+    margin: 20px auto;
     border-radius: 12px;
-    overflow: hidden;
     box-shadow: 0 8px 40px rgba(26,39,68,.18);
-  }
-
-  /* HEADER BLOCK */
-  .doc-header {
-    background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
-    padding: 32px 40px 24px;
-    position: relative;
     overflow: hidden;
   }
-  .doc-header::before {
-    content: '';
-    position: absolute;
-    right: -40px; top: -40px;
-    width: 220px; height: 220px;
-    border-radius: 50%;
-    border: 40px solid rgba(255,255,255,.05);
-  }
-  .doc-header::after {
-    content: '';
-    position: absolute;
-    right: 60px; top: 80px;
-    width: 100px; height: 100px;
-    border-radius: 50%;
-    border: 20px solid rgba(255,255,255,.04);
-  }
-  .doc-title {
-    font-size: 30px;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: 1px;
-    line-height: 1.1;
-  }
-  .doc-subtitle {
-    font-size: 13px;
-    color: rgba(255,255,255,.55);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-top: 4px;
-    font-family: 'IBM Plex Mono', monospace;
-  }
-  .doc-meta {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 24px;
-  }
-  .meta-field {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .meta-label {
-    font-size: 10px;
-    color: rgba(255,255,255,.45);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    font-family: 'IBM Plex Mono', monospace;
-  }
-  .meta-value {
-    font-size: 14px;
-    color: #fff;
-    font-weight: 600;
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.15);
-    border-radius: 6px;
-    padding: 6px 10px;
-    outline: none;
-    font-family: 'Sarabun', sans-serif;
-    cursor: text;
-    transition: background .15s, border-color .15s;
-  }
-  .meta-value:focus {
-    background: rgba(255,255,255,.16);
-    border-color: rgba(255,255,255,.4);
-  }
+}
 
-  /* LEGEND */
-  .legend-bar {
-    background: var(--gray0);
-    border-bottom: 1px solid var(--gray2);
-    padding: 10px 40px;
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    font-size: 12px;
-    flex-wrap: wrap;
-  }
-  .legend-item { display: flex; align-items: center; gap: 6px; }
-  .legend-dot {
-    width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0;
-  }
+/* ─── DOC HEADER ──────────────────────────────────────────── */
+.doc-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+  padding: 24px 16px 20px;
+  position: relative; overflow: hidden;
+}
+.doc-header::before {
+  content: ''; position: absolute; right: -30px; top: -30px;
+  width: 160px; height: 160px; border-radius: 50%;
+  border: 30px solid rgba(255,255,255,.05);
+}
+.doc-title { font-size: 24px; font-weight: 700; color: #fff; }
+.doc-subtitle {
+  font-size: 11px; color: rgba(255,255,255,.5);
+  letter-spacing: 3px; text-transform: uppercase;
+  font-family: 'IBM Plex Mono', monospace; margin-top: 2px;
+}
+.doc-meta {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-top: 16px;
+}
+.meta-field { display: flex; flex-direction: column; gap: 2px; }
+.meta-label {
+  font-size: 9px; color: rgba(255,255,255,.4);
+  text-transform: uppercase; letter-spacing: 1.5px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.meta-value {
+  font-size: 13px; color: #fff; font-weight: 600;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 6px; padding: 6px 10px;
+  outline: none; font-family: 'Sarabun', sans-serif;
+  cursor: default;
+  -webkit-user-select: none; user-select: none;
+}
+body.edit-mode .meta-value {
+  cursor: text; pointer-events: all;
+  -webkit-user-select: text; user-select: text;
+}
+body.edit-mode .meta-value:focus {
+  background: rgba(255,255,255,.18);
+  border-color: var(--gold);
+}
 
-  /* CONTENT */
-  .content { padding: 0 40px 40px; }
+/* ─── CONTENT ─────────────────────────────────────────────── */
+.content { padding: 0 0 100px; }
 
-  /* MONTH SECTION */
-  .month-section { margin-top: 32px; }
-  .month-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--navy);
-    color: #fff;
-    padding: 10px 16px;
-    border-radius: 8px 8px 0 0;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: .3px;
-  }
-  .month-header-left { display: flex; align-items: center; gap: 10px; }
-  .month-badge {
-    background: rgba(255,255,255,.15);
-    padding: 2px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: .5px;
-  }
-  .month-header-title {
-    outline: none;
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-family: 'Sarabun', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    min-width: 200px;
-    cursor: text;
-  }
+/* ─── MONTH SECTION ───────────────────────────────────────── */
+.month-section { margin-top: 20px; }
+.month-header {
+  background: var(--navy);
+  color: #fff; padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 6px;
+}
+.month-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.month-num {
+  background: rgba(255,255,255,.15); width: 24px; height: 24px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
+}
+.month-title {
+  font-size: 14px; font-weight: 700;
+  outline: none; cursor: default;
+  -webkit-user-select: none; user-select: none;
+  min-width: 60px;
+}
+body.edit-mode .month-title {
+  cursor: text; border-bottom: 1px dashed rgba(255,255,255,.4);
+  -webkit-user-select: text; user-select: text;
+}
+.month-note { font-size: 11px; opacity: .55; }
+.month-right { display: flex; align-items: center; gap: 8px; }
+.month-stats { font-size: 11px; opacity: .65; font-family: 'IBM Plex Mono', monospace; }
+.btn-del-month {
+  background: rgba(192,57,43,.7); border: none; cursor: pointer;
+  color: #fff; font-size: 11px; font-weight: 700;
+  border-radius: 6px; padding: 4px 10px;
+  display: none;
+}
+body.edit-mode .btn-del-month { display: block; }
+.btn-del-month:active { background: var(--red); }
 
-  /* TABLE */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13.5px;
-  }
-  thead th {
-    background: var(--blue-light);
-    color: var(--navy);
-    font-weight: 700;
-    padding: 9px 10px;
-    text-align: center;
-    border: 1px solid var(--gray2);
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    white-space: nowrap;
-  }
-  thead th.col-desc { text-align: left; }
+/* TABLE */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 480px; }
+thead th {
+  background: var(--blue-light); color: var(--navy);
+  font-weight: 700; padding: 8px 8px;
+  text-align: center; border: 1px solid var(--gray2);
+  font-size: 11px; text-transform: uppercase;
+  letter-spacing: .3px; white-space: nowrap;
+  position: sticky; top: 0;
+}
+th.col-desc { text-align: left; }
+td {
+  border: 1px solid var(--gray2);
+  padding: 7px 8px; vertical-align: middle;
+}
+td.editable {
+  outline: none; cursor: default;
+  -webkit-user-select: none; user-select: none;
+}
+body.edit-mode td.editable {
+  cursor: text;
+  -webkit-user-select: text; user-select: text;
+}
+body.edit-mode td.editable:focus {
+  background: #fffde7 !important;
+  box-shadow: inset 0 0 0 2px var(--gold);
+  position: relative; z-index: 1;
+}
+.col-no { width: 28px; text-align: center; color: var(--gray3); font-size: 11px; font-family: 'IBM Plex Mono', monospace; }
+.col-date { width: 80px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; }
+.col-desc { }
+.col-days { width: 44px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+.col-amt  { width: 100px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 12px; color: var(--navy); white-space: nowrap; }
+.col-note { width: 90px; font-size: 11px; color: var(--gray3); }
+.col-act  { width: 28px; text-align: center; }
 
-  tbody tr { transition: background .1s; }
-  tbody tr:hover td { background: #f0f4ff !important; }
+tr.row-normal td { background: #fff; }
+tr.row-stripe td { background: var(--gray0); }
+tr.row-ot td { background: var(--ot-bg); }
+tr.row-ot td.col-note { color: var(--gold); font-weight: 700; }
+tr.row-half td { background: var(--half-bg); }
+tr.row-half td.col-note { color: var(--red); font-weight: 600; }
+tr.row-paid td { background: var(--paid-bg); opacity: .7; }
+tr.row-paid td.col-note { color: var(--green); font-weight: 600; }
+tr.row-subtotal td {
+  background: var(--navy2); color: #fff;
+  font-weight: 700; font-size: 13px; padding: 9px 8px;
+}
+tr.row-subtotal td.col-amt { color: #fff; font-family: 'IBM Plex Mono', monospace; }
 
-  td {
-    border: 1px solid var(--gray2);
-    padding: 7px 10px;
-    vertical-align: middle;
-  }
-  td[contenteditable="true"] {
-    outline: none;
-    cursor: text;
-    position: relative;
-  }
-  td[contenteditable="true"]:focus {
-    background: #fffde7 !important;
-    box-shadow: inset 0 0 0 2px var(--gold);
-    z-index: 1;
-  }
+.tag {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  padding: 1px 5px; border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  vertical-align: middle; margin-left: 4px; pointer-events: none;
+}
+.tag-ot { background: var(--gold); color: #fff; }
+.tag-half { background: var(--red); color: #fff; }
+.tag-paid { background: var(--green); color: #fff; }
 
-  .col-no { width: 36px; text-align: center; color: var(--gray3); font-size: 12px; font-family: 'IBM Plex Mono', monospace; }
-  .col-date { width: 90px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; }
-  .col-desc { min-width: 200px; }
-  .col-days { width: 60px; text-align: center; font-family: 'IBM Plex Mono', monospace; }
-  .col-amt  { width: 120px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--navy); }
-  .col-note { width: 110px; font-size: 12px; color: var(--gray3); }
-  .col-action { width: 36px; text-align: center; }
+.btn-row-del {
+  background: none; border: none; cursor: pointer;
+  color: var(--gray2); font-size: 16px; line-height: 1;
+  padding: 2px; border-radius: 4px;
+  display: none; transition: all .15s;
+}
+body.edit-mode .btn-row-del { display: block; }
+.btn-row-del:active { color: var(--red); }
 
-  /* Row types */
-  tr.row-normal td { background: #fff; }
-  tr.row-stripe td { background: var(--gray0); }
-  tr.row-ot td { background: var(--ot-bg); }
-  tr.row-ot td.col-note { color: var(--gold); font-weight: 700; }
-  tr.row-half td { background: var(--half-bg); }
-  tr.row-half td.col-note { color: var(--red); font-weight: 600; }
-  tr.row-paid td { background: var(--paid-bg); opacity: .75; }
-  tr.row-paid td.col-note { color: var(--green); font-weight: 600; }
+/* TYPE SELECT */
+.type-sel {
+  font-size: 10px; border: 1px solid var(--gray2);
+  border-radius: 4px; padding: 2px; background: #fff;
+  cursor: pointer; display: none; width: 100%;
+  margin-top: 2px;
+}
+body.edit-mode .type-sel { display: block; }
 
-  /* OT tag */
-  .ot-tag {
-    display: inline-block;
-    background: var(--gold);
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 1px 6px;
-    border-radius: 4px;
-    margin-left: 6px;
-    font-family: 'IBM Plex Mono', monospace;
-    vertical-align: middle;
-    letter-spacing: .5px;
-    pointer-events: none;
-  }
-  .half-tag {
-    display: inline-block;
-    background: var(--red);
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 1px 6px;
-    border-radius: 4px;
-    margin-left: 6px;
-    font-family: 'IBM Plex Mono', monospace;
-    vertical-align: middle;
-    letter-spacing: .5px;
-    pointer-events: none;
-  }
-  .paid-tag {
-    display: inline-block;
-    background: var(--green);
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 1px 6px;
-    border-radius: 4px;
-    margin-left: 6px;
-    font-family: 'IBM Plex Mono', monospace;
-    vertical-align: middle;
-    letter-spacing: .5px;
-    pointer-events: none;
-  }
+/* ADD ROW BAR */
+.add-row-bar {
+  display: none;
+  background: var(--gray0); border-top: 1px dashed var(--gray2);
+  padding: 10px 12px; gap: 8px; flex-wrap: wrap; align-items: center;
+}
+body.edit-mode .add-row-bar { display: flex; }
+.add-row-bar label { font-size: 11px; color: var(--gray3); font-weight: 700; }
+.ai {
+  font-family: 'Sarabun', sans-serif; font-size: 13px;
+  border: 1px solid var(--gray2); border-radius: 6px;
+  padding: 6px 10px; background: #fff; color: var(--text);
+  outline: none; flex: 1; min-width: 80px;
+}
+.ai:focus { border-color: var(--blue); }
+.ai-date { max-width: 90px; font-family: 'IBM Plex Mono', monospace; }
+.ai-type { max-width: 90px; }
+.btn-add-row {
+  background: var(--blue); color: #fff; border: none; cursor: pointer;
+  font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 700;
+  border-radius: 6px; padding: 7px 14px;
+}
+.btn-add-row:active { background: #1d4ac7; }
 
-  /* Subtotal row */
-  tr.row-subtotal td {
-    background: var(--navy2);
-    color: #fff;
-    font-weight: 700;
-    font-size: 13px;
-    padding: 9px 10px;
-  }
-  tr.row-subtotal td.col-amt {
-    color: #fff;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 14px;
-  }
+/* ADD MONTH */
+.btn-add-month {
+  display: none;
+  width: calc(100% - 32px); margin: 16px 16px 0;
+  background: none; border: 2px dashed var(--gray2);
+  color: var(--gray3); font-family: 'Sarabun', sans-serif;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  border-radius: 10px; padding: 14px;
+  transition: all .15s;
+}
+body.edit-mode .btn-add-month { display: block; }
+.btn-add-month:active { border-color: var(--blue); color: var(--blue); }
 
-  /* Delete btn in rows */
-  .row-del-btn {
-    background: none; border: none; cursor: pointer;
-    color: var(--gray3); font-size: 16px; line-height: 1;
-    padding: 2px 4px; border-radius: 4px; transition: all .15s;
-    font-weight: 700;
-  }
-  .row-del-btn:hover { color: var(--red); background: #fdecea; }
+/* GRAND TOTAL */
+.grand-total-block {
+  margin: 20px 0 0;
+  background: linear-gradient(135deg, var(--navy), var(--navy2));
+  padding: 18px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.gt-label { color: rgba(255,255,255,.7); font-size: 13px; font-weight: 600; }
+.gt-sub { color: rgba(255,255,255,.4); font-size: 10px; margin-top: 2px; font-family: 'IBM Plex Mono', monospace; }
+.gt-amount { font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight: 700; color: var(--gold); }
+.gt-unit { color: rgba(255,255,255,.6); font-size: 13px; font-weight: 600; margin-left: 6px; }
 
-  /* Type selector pill */
-  .type-selector {
-    display: flex; gap: 4px; padding: 4px; background: var(--gray1);
-    border-radius: 8px; width: fit-content;
-  }
-  .type-btn {
-    border: none; cursor: pointer; font-family: 'Sarabun', sans-serif;
-    font-size: 11px; font-weight: 600; border-radius: 5px;
-    padding: 4px 10px; transition: all .12s ease;
-    background: transparent; color: var(--gray3);
-  }
-  .type-btn.active { background: #fff; color: var(--navy); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+/* NOTES */
+.notes-block {
+  margin: 0; background: var(--gold-light);
+  border-top: 2px solid #e8d5a0;
+  padding: 12px 16px; font-size: 11px; color: #7d5a00; line-height: 1.8;
+}
 
-  /* Add row controls */
-  .add-row-bar {
-    border: 1px dashed var(--gray2);
-    border-top: none;
-    border-radius: 0 0 8px 8px;
-    padding: 8px 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--gray0);
-    flex-wrap: wrap;
-  }
-  .add-row-bar label { font-size: 12px; color: var(--gray3); font-weight: 600; white-space: nowrap; }
-  .add-input {
-    font-family: 'Sarabun', sans-serif; font-size: 13px;
-    border: 1px solid var(--gray2); border-radius: 5px;
-    padding: 5px 9px; background: #fff; color: var(--text);
-    outline: none; transition: border-color .15s;
-  }
-  .add-input:focus { border-color: var(--blue); }
-  .add-input.date-input { width: 90px; font-family: 'IBM Plex Mono', monospace; }
-  .add-input.desc-input { flex: 1; min-width: 140px; }
-  .add-input.note-input { width: 100px; }
+/* SIGNATURE */
+.sig-section {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px; padding: 20px 16px 24px;
+  padding-bottom: max(24px, calc(24px + var(--safe)));
+  border-top: 1px solid var(--gray2); margin-top: 16px;
+}
+.sig-box { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.sig-label { font-size: 12px; font-weight: 700; color: var(--navy); }
+.sig-space { height: 44px; width: 100%; border-bottom: 1.5px solid var(--gray3); }
+.sig-name { font-size: 10px; color: var(--gray3); text-align: center; }
+.sig-date { font-size: 10px; color: var(--gray3); }
 
-  /* GRAND TOTAL */
-  .grand-total-block {
-    margin-top: 24px;
-    background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
-    border-radius: 10px;
-    padding: 20px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .gt-label { color: rgba(255,255,255,.7); font-size: 13px; font-weight: 600; letter-spacing: .5px; }
-  .gt-sub { color: rgba(255,255,255,.45); font-size: 11px; margin-top: 2px; font-family: 'IBM Plex Mono', monospace; }
-  .gt-amount {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--gold);
-    letter-spacing: 1px;
-  }
-  .gt-unit { color: rgba(255,255,255,.6); font-size: 14px; font-weight: 600; margin-left: 8px; }
+/* ─── BOTTOM NAV (mobile) ──────────────────────────────────── */
+.bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--navy);
+  padding: 10px 16px;
+  padding-bottom: max(10px, var(--safe));
+  box-shadow: 0 -2px 20px rgba(0,0,0,.3);
+  z-index: 90; gap: 8px;
+}
+@media (max-width: 740px) { .bottom-nav { display: flex; } }
+.bn-btn {
+  flex: 1; border: none; cursor: pointer;
+  font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 700;
+  border-radius: 10px; padding: 11px 8px;
+  transition: all .15s;
+}
+.bn-save { background: var(--gold); color: #fff; }
+.bn-save:active { background: var(--gold-dark); }
+.bn-edit { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.2); }
+.bn-edit:active { background: rgba(255,255,255,.22); }
+.bn-print { background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); }
+.bn-print:active { background: rgba(255,255,255,.18); }
 
-  /* NOTES */
-  .notes-block {
-    margin-top: 20px;
-    background: var(--gold-light);
-    border: 1px solid #e8d5a0;
-    border-radius: 8px;
-    padding: 12px 18px;
-    font-size: 12px;
-    color: #7d5a00;
-    line-height: 1.8;
-  }
-  .notes-block strong { color: #5a3e00; }
+/* ─── LOADING ─────────────────────────────────────────────── */
+#loading-screen {
+  position: fixed; inset: 0; z-index: 9998;
+  background: var(--navy);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px;
+}
+.loading-logo {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 34px; font-weight: 900; color: #fff;
+  font-family: 'Sarabun', sans-serif;
+  animation: logoPop .5s ease;
+}
+@keyframes logoPop { from{transform:scale(.6);opacity:0} to{transform:scale(1);opacity:1} }
+.loading-text { color: rgba(255,255,255,.6); font-size: 14px; }
+.loading-spinner {
+  width: 32px; height: 32px;
+  border: 3px solid rgba(255,255,255,.15);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
 
-  /* SIGNATURE */
-  .sig-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 24px;
-    margin-top: 40px;
-    padding-top: 24px;
-    border-top: 1px solid var(--gray2);
-  }
-  .sig-box { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .sig-label { font-size: 13px; font-weight: 700; color: var(--navy); }
-  .sig-space { height: 56px; width: 100%; border-bottom: 2px solid var(--gray3); position: relative; }
-  .sig-name { font-size: 12px; color: var(--gray3); }
-  .sig-date { font-size: 12px; color: var(--gray3); }
-
-  /* PRINT */
-  @media print {
-    body { background: #fff; padding: 0; }
-    .toolbar { display: none; }
-    .page-wrap { box-shadow: none; border-radius: 0; margin: 0; }
-    .add-row-bar { display: none !important; }
-    .row-del-btn { display: none !important; }
-    .col-action { display: none !important; }
-    td[contenteditable] { outline: none !important; box-shadow: none !important; }
-    .meta-value { background: transparent !important; border-color: rgba(255,255,255,.2) !important; }
-    .month-header-title { cursor: default; }
-    thead th.col-action { display: none !important; }
-  }
-
-  /* Fade-in on load */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .month-section { animation: fadeUp .3s ease both; }
-  .month-section:nth-child(2) { animation-delay: .05s; }
-  .month-section:nth-child(3) { animation-delay: .10s; }
-  .month-section:nth-child(4) { animation-delay: .15s; }
-  .month-section:nth-child(5) { animation-delay: .20s; }
+/* ─── PRINT ────────────────────────────────────────────────── */
+@media print {
+  body { background: #fff; }
+  .toolbar, .sync-bar, .legend-bar, .add-row-bar,
+  .btn-add-month, .btn-del-month, .btn-row-del,
+  .type-sel, .bottom-nav, #toast, #lock-overlay, #loading-screen { display: none !important; }
+  .page-wrap { box-shadow: none; border-radius: 0; margin: 0; }
+  td.editable { cursor: default; -webkit-user-select: none; user-select: none; }
+  .col-act { display: none; }
+  thead th.col-act { display: none; }
+}
 </style>
 </head>
 <body>
 
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="loading-logo">ใบ</div>
+  <div class="loading-text">กำลังโหลดข้อมูล...</div>
+  <div class="loading-spinner"></div>
+</div>
+
+<!-- LOCK OVERLAY -->
+<div id="lock-overlay">
+  <div class="lock-card">
+    <div class="lock-icon">🔐</div>
+    <div class="lock-title">Editor Mode</div>
+    <div class="lock-sub">ใส่รหัสผ่านเพื่อเปิดโหมดแก้ไข</div>
+    <input type="password" id="lock-input" class="lock-input"
+      placeholder="••••••••" maxlength="20"
+      onkeydown="if(event.key==='Enter')tryUnlock()">
+    <button class="lock-btn" onclick="tryUnlock()">เข้าสู่ระบบ</button>
+    <div class="lock-err" id="lock-err"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
 <!-- TOOLBAR -->
 <div class="toolbar">
-  <span class="toolbar-title">📄 <span>ใบสำคัญจ่าย</span> – สหรุ่งเรืองรายวันพี่พงศ์</span>
-  <button class="btn btn-sec" onclick="addMonth()">+ เพิ่มเดือน</button>
-  <div class="sep"></div>
-  <button class="btn btn-print" onclick="window.print()">🖨 พิมพ์</button>
+  <div class="toolbar-logo">ใบ</div>
+  <div class="toolbar-title">
+    <strong>ใบสำคัญจ่าย <span class="edit-badge">✏️ EDIT</span></strong>
+    <span>สหรุ่งเรืองรายวัน พี่พงศ์</span>
+  </div>
+  <!-- Desktop buttons -->
+  <button class="tb-btn tb-btn-edit" id="tb-edit-btn" onclick="toggleEditMode()" style="display:none">✏️ แก้ไข</button>
+  <button class="tb-btn tb-btn-save" id="tb-save-btn" onclick="saveData()" style="display:none">💾 บันทึก</button>
+  <button class="tb-btn tb-btn-print" onclick="window.print()" style="display:none">🖨</button>
+</div>
+
+<!-- SHOW DESKTOP BUTTONS on large screen -->
+<style>
+@media (min-width: 741px) {
+  #tb-edit-btn, #tb-save-btn { display: flex !important; }
+  .tb-btn-print { display: flex !important; }
+}
+</style>
+
+<!-- SYNC BAR -->
+<div class="sync-bar">
+  <div class="sync-dot" id="sync-dot"></div>
+  <span id="sync-text">กำลังเชื่อมต่อ...</span>
+</div>
+
+<!-- LEGEND -->
+<div class="legend-bar">
+  <span class="legend-item"><span class="legend-dot" style="background:var(--ot-bg);border:1px solid #f0c040"></span>OT</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--half-bg);border:1px solid #e57373"></span>ครึ่งวัน</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--paid-bg);border:1px solid #66bb6a"></span>จ่ายแล้ว</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#fff;border:1px solid var(--gray2)"></span>ปกติ</span>
 </div>
 
 <!-- PAGE -->
 <div class="page-wrap">
-
-  <!-- HEADER -->
   <div class="doc-header">
     <div class="doc-title">ใบสำคัญจ่าย</div>
     <div class="doc-subtitle">Payment Voucher</div>
     <div class="doc-meta">
       <div class="meta-field">
         <span class="meta-label">จ่ายให้ / Pay to</span>
-        <div class="meta-value" contenteditable="true">พี่พงศ์  (คนขับรถ 6 ล้อ)</div>
+        <div class="meta-value editable" contenteditable="false" id="meta-payto">พี่พงศ์ (คนขับรถ 6 ล้อ)</div>
       </div>
       <div class="meta-field">
         <span class="meta-label">ทะเบียน / License</span>
-        <div class="meta-value" contenteditable="true">83-8405</div>
+        <div class="meta-value editable" contenteditable="false" id="meta-plate">83-8405</div>
       </div>
       <div class="meta-field">
         <span class="meta-label">สถานที่ / Location</span>
-        <div class="meta-value" contenteditable="true">บ่อขยะ สหรุ่งเรือง</div>
+        <div class="meta-value editable" contenteditable="false" id="meta-loc">บ่อขยะ สหรุ่งเรือง</div>
       </div>
       <div class="meta-field">
-        <span class="meta-label">อัตราค่าแรง / Rate</span>
-        <div class="meta-value" id="daily-rate" contenteditable="true" oninput="recalcAll()">2300</div>
+        <span class="meta-label">อัตราค่าแรง / Rate (บาท/วัน)</span>
+        <div class="meta-value editable" contenteditable="false" id="meta-rate" oninput="recalcAll()">2300</div>
       </div>
       <div class="meta-field">
         <span class="meta-label">ระยะเวลา / Period</span>
-        <div class="meta-value" contenteditable="true">ธ.ค. 2568 – มี.ค. 2569</div>
+        <div class="meta-value editable" contenteditable="false" id="meta-period">ธ.ค. 2568 – มี.ค. 2569</div>
       </div>
       <div class="meta-field">
         <span class="meta-label">วันที่ออกเอกสาร / Date</span>
-        <div class="meta-value" contenteditable="true">21 มีนาคม 2569</div>
+        <div class="meta-value editable" contenteditable="false" id="meta-date">21 มีนาคม 2569</div>
       </div>
     </div>
   </div>
 
-  <!-- LEGEND -->
-  <div class="legend-bar">
-    <strong style="font-size:12px;color:#555;">สัญลักษณ์:</strong>
-    <span class="legend-item"><span class="legend-dot" style="background:var(--ot-bg);border:1px solid var(--ot-border)"></span>วันที่มี OT</span>
-    <span class="legend-item"><span class="legend-dot" style="background:var(--half-bg);border:1px solid var(--half-border)"></span>ครึ่งวัน</span>
-    <span class="legend-item"><span class="legend-dot" style="background:var(--paid-bg);border:1px solid var(--paid-border)"></span>จ่ายแล้ว</span>
-    <span class="legend-item"><span class="legend-dot" style="background:#fff;border:1px solid var(--gray2)"></span>ปกติ</span>
-  </div>
-
-  <!-- CONTENT -->
   <div class="content">
     <div id="months-container"></div>
+    <button class="btn-add-month" onclick="addMonth()">+ เพิ่มเดือน</button>
 
-    <!-- GRAND TOTAL -->
     <div class="grand-total-block">
       <div>
-        <div class="gt-label">ยอดรวมทั้งหมด (Grand Total)</div>
+        <div class="gt-label">ยอดรวมทั้งหมด</div>
         <div class="gt-sub" id="gt-breakdown">–</div>
       </div>
       <div>
@@ -516,200 +638,267 @@
     </div>
 
     <div class="notes-block">
-      <strong>หมายเหตุ:</strong>
-      อัตราค่าแรงปกติ = <strong>2,300 บาท/วัน</strong> &nbsp;|&nbsp;
-      ครึ่งวัน = <strong>1,150 บาท</strong> &nbsp;|&nbsp;
-      วันที่มี OT คิดค่าแรง <strong>2,300 บาท</strong> เท่าเดิม (OT แสดงเป็นหมายเหตุ) &nbsp;|&nbsp;
-      วันที่ 11/12 และ 12/12 จ่ายแล้ว ไม่รวมในใบนี้
+      <strong>หมายเหตุ:</strong> ค่าแรงปกติ = <strong>2,300 บาท/วัน</strong> | ครึ่งวัน = <strong>1,150 บาท</strong> | วันที่มี OT คิดค่าแรง <strong>2,300 บาท</strong> เท่าเดิม (OT แสดงเป็นหมายเหตุ) | วันที่ 11/12 และ 12/12 จ่ายแล้ว ไม่รวมในใบนี้
     </div>
 
-    <!-- SIGNATURE -->
     <div class="sig-section">
       <div class="sig-box">
         <div class="sig-label">ผู้รับเงิน</div>
         <div class="sig-space"></div>
         <div class="sig-name">(................................)</div>
-        <div class="sig-date">วันที่ ......./......./........</div>
+        <div class="sig-date">วันที่ ......./......./......</div>
       </div>
       <div class="sig-box">
         <div class="sig-label">ผู้จ่ายเงิน</div>
         <div class="sig-space"></div>
         <div class="sig-name">(................................)</div>
-        <div class="sig-date">วันที่ ......./......./........</div>
+        <div class="sig-date">วันที่ ......./......./......</div>
       </div>
       <div class="sig-box">
         <div class="sig-label">ผู้อนุมัติ</div>
         <div class="sig-space"></div>
         <div class="sig-name">(................................)</div>
-        <div class="sig-date">วันที่ ......./......./........</div>
+        <div class="sig-date">วันที่ ......./......./......</div>
       </div>
     </div>
   </div>
 </div>
 
-<script>
-// ─── DATA ───────────────────────────────────────────────────────────────────
-const DATA = [
-  {
-    id: 'm1',
-    title: 'ธันวาคม 2568',
-    note: 'ไม่รวม 11/12 และ 12/12 – จ่ายแล้ว',
-    rows: [
-      { date:'11/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'paid', note:'จ่ายแล้ว' },
-      { date:'12/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'paid', note:'จ่ายแล้ว' },
-      { date:'13/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'16/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'ot',     note:'OT 17:00-20:00 น. (3 ชม.)' },
-      { date:'22/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'23/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'24/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'ot',     note:'OT 17:00-19:00 น. (2 ชม.)' },
-      { date:'25/12/68', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-    ]
-  },
-  {
-    id: 'm2',
-    title: 'มกราคม 2569',
-    note: '',
-    rows: [
-      { date:'10/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'13/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'15/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'18/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'19/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'20/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'24/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'half',   note:'ครึ่งวัน' },
-      { date:'26/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'27/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'28/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'29/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'31/1/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-    ]
-  },
-  {
-    id: 'm3',
-    title: 'กุมภาพันธ์ 2569',
-    note: '',
-    rows: [
-      { date:'1/2/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'3/2/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'4/2/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'5/2/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'9/2/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'10/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'11/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'12/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'13/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'14/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'15/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'16/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'17/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'18/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'19/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'half',   note:'ครึ่งวัน' },
-      { date:'20/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'21/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'23/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'25/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'half',   note:'ครึ่งวัน – รถเพลาขาด' },
-      { date:'26/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'27/2/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-    ]
-  },
-  {
-    id: 'm4',
-    title: 'มีนาคม 2569',
-    note: '',
-    rows: [
-      { date:'1/3/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'2/3/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'4/3/69',  desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'10/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'11/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'12/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'14/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'15/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'16/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'17/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'18/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-      { date:'20/3/69', desc:'บ่อขยะ สหรุ่งเรือง', type:'normal', note:'' },
-    ]
-  }
-];
+<!-- BOTTOM NAV (mobile) -->
+<div class="bottom-nav">
+  <button class="bn-btn bn-edit" id="bn-edit-btn" onclick="toggleEditMode()">✏️ แก้ไข</button>
+  <button class="bn-btn bn-save" id="bn-save-btn" onclick="saveData()">💾 บันทึก</button>
+  <button class="bn-btn bn-print" onclick="window.print()">🖨 พิมพ์</button>
+</div>
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
+<script>
+// ════════════════════════════════════════════════════════════
+//  CONFIG — เปลี่ยน SCRIPT_URL หลัง Deploy Apps Script
+// ════════════════════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzC1JPzH9z8RaoUNbzyatzcZ5Si6KSyOehu7_FfAJ_McMcwc1m_t4nkGk6iricM5g4/exec';
+const PASSWORD   = 'Gold1998@';
+
+// ════════════════════════════════════════════════════════════
+//  DEFAULT DATA
+// ════════════════════════════════════════════════════════════
+const DEFAULT_DATA = {
+  meta: {
+    payto: 'พี่พงศ์ (คนขับรถ 6 ล้อ)',
+    plate: '83-8405',
+    loc: 'บ่อขยะ สหรุ่งเรือง',
+    rate: '2300',
+    period: 'ธ.ค. 2568 – มี.ค. 2569',
+    date: '21 มีนาคม 2569'
+  },
+  months: [
+    { id:'m1', title:'ธันวาคม 2568', note:'ไม่รวม 11/12 และ 12/12 – จ่ายแล้ว', rows:[
+      {date:'11/12/68',desc:'บ่อขยะ สหรุ่งเรือง',type:'paid',note:'จ่ายแล้ว'},
+      {date:'12/12/68',desc:'บ่อขยะ สหรุ่งเรือง',type:'paid',note:'จ่ายแล้ว'},
+      {date:'13/12/68',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'16/12/68',desc:'บ่อขยะ สหรุ่งเรือง',type:'ot',note:'OT 17:00-20:00 น. (3 ชม.)'},
+      {date:'22/12/68',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'23/12/68',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'24/12/68',desc:'บ่อขยะ สหรุ่งเรือง',type:'ot',note:'OT 17:00-19:00 น. (2 ชม.)'},
+      {date:'25/12/68',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+    ]},
+    { id:'m2', title:'มกราคม 2569', note:'', rows:[
+      {date:'10/1/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'13/1/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'15/1/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'18/1/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'19/1/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'20/1/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'24/1/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'half',note:'ครึ่งวัน'},
+      {date:'26/1/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'27/1/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'28/1/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'29/1/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'31/1/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+    ]},
+    { id:'m3', title:'กุมภาพันธ์ 2569', note:'', rows:[
+      {date:'1/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'3/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'4/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'5/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'9/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'10/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'11/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'12/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'13/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'14/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'15/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'16/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'17/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'18/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'19/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'half',note:'ครึ่งวัน'},
+      {date:'20/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'21/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'23/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'25/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'half',note:'ครึ่งวัน – รถเพลาขาด'},
+      {date:'26/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'27/2/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+    ]},
+    { id:'m4', title:'มีนาคม 2569', note:'', rows:[
+      {date:'1/3/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'2/3/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'4/3/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'10/3/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'11/3/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'12/3/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'14/3/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'15/3/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'16/3/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'17/3/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'18/3/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+      {date:'20/3/69',desc:'บ่อขยะ สหรุ่งเรือง',type:'normal',note:''},
+    ]}
+  ]
+};
+
+// ════════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════════
+let DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
+let editMode = false;
+
+// ════════════════════════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════════════════════════
 function getDailyRate() {
-  const v = parseFloat(document.getElementById('daily-rate').innerText.replace(/,/g,''));
+  const v = parseFloat((document.getElementById('meta-rate').innerText||'').replace(/,/g,''));
   return isNaN(v) ? 2300 : v;
 }
-
-function rowAmount(type) {
+function rowAmt(type) {
   const d = getDailyRate();
   if (type === 'half') return d / 2;
   if (type === 'paid') return 0;
-  return d; // normal & ot = full daily rate
+  return d;
 }
-
 function fmt(n) {
-  return n.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2});
+  return n.toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
-
-function rowClass(type, idx) {
-  if (type === 'ot') return 'row-ot';
-  if (type === 'half') return 'row-half';
-  if (type === 'paid') return 'row-paid';
-  return idx % 2 === 0 ? 'row-normal' : 'row-stripe';
+function rowCls(type, i) {
+  if (type==='ot') return 'row-ot';
+  if (type==='half') return 'row-half';
+  if (type==='paid') return 'row-paid';
+  return i%2===0?'row-normal':'row-stripe';
 }
-
 function typeTag(type) {
-  if (type === 'ot') return '<span class="ot-tag">OT</span>';
-  if (type === 'half') return '<span class="half-tag">½</span>';
-  if (type === 'paid') return '<span class="paid-tag">✓ จ่ายแล้ว</span>';
+  if (type==='ot') return '<span class="tag tag-ot">OT</span>';
+  if (type==='half') return '<span class="tag tag-half">½</span>';
+  if (type==='paid') return '<span class="tag tag-paid">✓</span>';
   return '';
 }
-
-function daysLabel(type) {
-  if (type === 'half') return '½';
-  if (type === 'paid') return '–';
+function dayLabel(type) {
+  if (type==='half') return '½';
+  if (type==='paid') return '–';
   return '1';
 }
+function showToast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(t._to);
+  t._to = setTimeout(() => t.className = '', 2800);
+}
+function setSyncStatus(state, msg) {
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-text');
+  dot.className = 'sync-dot ' + state;
+  txt.textContent = msg;
+}
 
-// ─── RENDER ───────────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+//  LOCK / EDIT MODE
+// ════════════════════════════════════════════════════════════
+function tryUnlock() {
+  const val = document.getElementById('lock-input').value;
+  if (val === PASSWORD) {
+    document.getElementById('lock-overlay').classList.remove('show');
+    document.getElementById('lock-input').value = '';
+    enableEditMode();
+  } else {
+    const inp = document.getElementById('lock-input');
+    const err = document.getElementById('lock-err');
+    inp.classList.remove('shake');
+    void inp.offsetWidth;
+    inp.classList.add('shake');
+    err.textContent = 'รหัสผ่านไม่ถูกต้อง';
+    setTimeout(() => { inp.classList.remove('shake'); err.textContent=''; }, 1500);
+  }
+}
+
+function toggleEditMode() {
+  if (editMode) {
+    disableEditMode();
+  } else {
+    document.getElementById('lock-overlay').classList.add('show');
+    setTimeout(() => document.getElementById('lock-input').focus(), 300);
+  }
+}
+
+function enableEditMode() {
+  editMode = true;
+  document.body.classList.add('edit-mode');
+  document.querySelectorAll('.editable, .meta-value').forEach(el => {
+    el.contentEditable = 'true';
+  });
+  document.querySelectorAll('.month-title').forEach(el => {
+    el.contentEditable = 'true';
+  });
+  document.getElementById('bn-edit-btn').textContent = '🔒 ปิดแก้ไข';
+  document.getElementById('tb-edit-btn').textContent = '🔒 ปิดแก้ไข';
+  showToast('✏️ เปิดโหมดแก้ไขแล้ว', 'ok');
+}
+
+function disableEditMode() {
+  editMode = false;
+  document.body.classList.remove('edit-mode');
+  document.querySelectorAll('.editable, .meta-value').forEach(el => {
+    el.contentEditable = 'false';
+  });
+  document.querySelectorAll('.month-title').forEach(el => {
+    el.contentEditable = 'false';
+  });
+  document.getElementById('bn-edit-btn').textContent = '✏️ แก้ไข';
+  document.getElementById('tb-edit-btn').textContent = '✏️ แก้ไข';
+  showToast('🔒 ปิดโหมดแก้ไขแล้ว', 'ok');
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════════════════════
 function render() {
   const container = document.getElementById('months-container');
   container.innerHTML = '';
 
-  DATA.forEach((month, mi) => {
-    const sec = document.createElement('div');
-    sec.className = 'month-section';
-    sec.dataset.mid = month.id;
-
-    // Count billable days for badge
+  DATA.months.forEach((month, mi) => {
     const billable = month.rows.filter(r => r.type !== 'paid');
-    const halfCount = billable.filter(r => r.type === 'half').length;
-    const fullCount = billable.filter(r => r.type !== 'half').length;
-    const subtotal = month.rows.reduce((s,r) => s + rowAmount(r.type), 0);
+    const halves   = billable.filter(r => r.type === 'half').length;
+    const fulls    = billable.filter(r => r.type !== 'half').length;
+    const subtotal = month.rows.reduce((s,r) => s + rowAmt(r.type), 0);
+    let stats = `${fulls} วัน`;
+    if (halves) stats += ` + ${halves}×½`;
 
-    let badgeText = `${fullCount} วัน`;
-    if (halfCount) badgeText += ` + ${halfCount} ครึ่งวัน`;
-
-    // Build table rows HTML
     let rowsHtml = '';
-    let displayNo = 0;
+    let dispNo = 0;
     month.rows.forEach((r, ri) => {
-      if (r.type !== 'paid') displayNo++;
-      const noLabel = r.type === 'paid' ? '–' : displayNo;
-      const amt = rowAmount(r.type);
-      const amtDisplay = r.type === 'paid' ? '–' : fmt(amt);
+      if (r.type !== 'paid') dispNo++;
+      const noLabel = r.type === 'paid' ? '–' : dispNo;
+      const amt = rowAmt(r.type);
 
       rowsHtml += `
-      <tr class="${rowClass(r.type, ri)}" data-ri="${ri}" data-mid="${month.id}">
+      <tr class="${rowCls(r.type,ri)}">
         <td class="col-no">${noLabel}</td>
-        <td class="col-date" contenteditable="true" data-field="date" data-ri="${ri}" data-mid="${month.id}">${r.date}</td>
-        <td class="col-desc" contenteditable="true" data-field="desc" data-ri="${ri}" data-mid="${month.id}">${r.desc}${typeTag(r.type)}</td>
-        <td class="col-days">${daysLabel(r.type)}</td>
-        <td class="col-amt">${amtDisplay}</td>
-        <td class="col-note" contenteditable="true" data-field="note" data-ri="${ri}" data-mid="${month.id}">${r.note}</td>
-        <td class="col-action">
-          <div style="display:flex;flex-direction:column;gap:2px;align-items:center;">
-            <button class="row-del-btn" onclick="deleteRow('${month.id}',${ri})" title="ลบแถว">×</button>
-            <select style="font-size:10px;border:1px solid #dde;border-radius:4px;padding:1px;background:#fff;cursor:pointer;max-width:48px;color:#333" onchange="changeType('${month.id}',${ri},this.value)" title="เปลี่ยนประเภท">
+        <td class="col-date editable" contenteditable="${editMode}" data-mid="${month.id}" data-ri="${ri}" data-field="date">${r.date}</td>
+        <td class="col-desc editable" contenteditable="${editMode}" data-mid="${month.id}" data-ri="${ri}" data-field="desc">${r.desc}${typeTag(r.type)}</td>
+        <td class="col-days">${dayLabel(r.type)}</td>
+        <td class="col-amt">${r.type==='paid'?'–':fmt(amt)}</td>
+        <td class="col-note editable" contenteditable="${editMode}" data-mid="${month.id}" data-ri="${ri}" data-field="note">${r.note}</td>
+        <td class="col-act">
+          <div style="display:flex;flex-direction:column;gap:2px;align-items:center">
+            <button class="btn-row-del" onclick="deleteRow('${month.id}',${ri})" title="ลบ">×</button>
+            <select class="type-sel" onchange="changeType('${month.id}',${ri},this.value)">
               <option value="normal" ${r.type==='normal'?'selected':''}>ปกติ</option>
               <option value="ot"     ${r.type==='ot'?'selected':''}>OT</option>
               <option value="half"   ${r.type==='half'?'selected':''}>½วัน</option>
@@ -720,140 +909,216 @@ function render() {
       </tr>`;
     });
 
+    const sec = document.createElement('div');
+    sec.className = 'month-section';
     sec.innerHTML = `
       <div class="month-header">
-        <div class="month-header-left">
-          <span class="month-badge">${mi+1}</span>
-          <span class="month-header-title" contenteditable="true" data-mid="${month.id}" data-field="title">${month.title}</span>
-          ${month.note ? `<span style="font-size:11px;opacity:.6;font-weight:400">${month.note}</span>` : ''}
+        <div class="month-left">
+          <span class="month-num">${mi+1}</span>
+          <span class="month-title" contenteditable="${editMode}" data-mid="${month.id}" data-field="title">${month.title}</span>
+          ${month.note ? `<span class="month-note">${month.note}</span>` : ''}
         </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:12px;opacity:.65;font-family:'IBM Plex Mono',monospace">${badgeText}</span>
-          <button class="btn btn-del" onclick="deleteMonth('${month.id}')" style="padding:4px 10px;font-size:12px">× ลบเดือน</button>
+        <div class="month-right">
+          <span class="month-stats">${stats}</span>
+          <button class="btn-del-month" onclick="deleteMonth('${month.id}')">× ลบ</button>
         </div>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th class="col-no">ที่</th>
-            <th class="col-date">วันที่</th>
-            <th class="col-desc col-action-hide">รายการ / สถานที่</th>
-            <th class="col-days">วัน</th>
-            <th class="col-amt">จำนวนเงิน (บาท)</th>
-            <th class="col-note">หมายเหตุ</th>
-            <th class="col-action"></th>
-          </tr>
-        </thead>
-        <tbody id="tbody-${month.id}">
-          ${rowsHtml}
-          <tr class="row-subtotal">
-            <td colspan="4" style="text-align:right;padding-right:14px">รวมเดือนนี้</td>
-            <td class="col-amt">${fmt(subtotal)}</td>
-            <td colspan="2"></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-no">#</th>
+              <th class="col-date">วันที่</th>
+              <th class="col-desc">รายการ</th>
+              <th class="col-days">วัน</th>
+              <th class="col-amt">จำนวนเงิน</th>
+              <th class="col-note">หมายเหตุ</th>
+              <th class="col-act"></th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}
+            <tr class="row-subtotal">
+              <td colspan="4" style="text-align:right;padding-right:12px">รวมเดือนนี้</td>
+              <td class="col-amt">${fmt(subtotal)}</td>
+              <td colspan="2"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="add-row-bar">
-        <label>เพิ่มแถว:</label>
-        <input class="add-input date-input" id="add-date-${month.id}" placeholder="วันที่ เช่น 5/4/69">
-        <input class="add-input desc-input" id="add-desc-${month.id}" placeholder="รายการ" value="บ่อขยะ สหรุ่งเรือง">
-        <input class="add-input note-input" id="add-note-${month.id}" placeholder="หมายเหตุ">
-        <select class="add-input" id="add-type-${month.id}" style="width:auto">
+        <label>+ แถว:</label>
+        <input class="ai ai-date" id="ad-${month.id}" placeholder="วันที่">
+        <input class="ai" id="adesc-${month.id}" placeholder="รายการ" value="บ่อขยะ สหรุ่งเรือง" style="flex:1;min-width:100px">
+        <select class="ai ai-type" id="atype-${month.id}">
           <option value="normal">ปกติ</option>
           <option value="ot">OT</option>
-          <option value="half">ครึ่งวัน</option>
+          <option value="half">½วัน</option>
           <option value="paid">จ่ายแล้ว</option>
         </select>
-        <button class="btn btn-add" onclick="addRow('${month.id}')">+ เพิ่ม</button>
-      </div>
-    `;
-
+        <button class="btn-add-row" onclick="addRow('${month.id}')">เพิ่ม</button>
+      </div>`;
     container.appendChild(sec);
   });
 
-  // Attach contenteditable listeners
+  // Attach blur listeners for inline edits
   document.querySelectorAll('[data-field][data-mid]').forEach(el => {
     el.addEventListener('blur', () => {
-      const mid = el.dataset.mid;
-      const field = el.dataset.field;
-      const ri = el.dataset.ri;
-      const month = DATA.find(m => m.id === mid);
+      const mid = el.dataset.mid, field = el.dataset.field, ri = el.dataset.ri;
+      const month = DATA.months.find(m => m.id === mid);
       if (!month) return;
       if (field === 'title') {
         month.title = el.innerText.trim();
-      } else if (ri !== undefined) {
-        // strip any tags before saving text
-        const text = el.innerText.replace(/OT|½|✓ จ่ายแล้ว/g,'').trim();
-        month.rows[parseInt(ri)][field] = text;
+        return;
       }
+      const text = el.innerText.replace(/OT|½|✓/g,'').trim();
+      if (ri !== undefined) month.rows[parseInt(ri)][field] = text;
+    });
+  });
+
+  // Attach meta blur listeners
+  ['payto','plate','loc','rate','period','date'].forEach(id => {
+    const el = document.getElementById('meta-'+id);
+    if (el) el.addEventListener('blur', () => {
+      DATA.meta[id] = el.innerText.trim();
+      if (id === 'rate') recalcAll();
     });
   });
 
   recalcAll();
 }
 
-// ─── ACTIONS ─────────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+//  ACTIONS
+// ════════════════════════════════════════════════════════════
 function deleteRow(mid, ri) {
-  const month = DATA.find(m => m.id === mid);
-  if (!month) return;
-  month.rows.splice(ri, 1);
+  DATA.months.find(m=>m.id===mid).rows.splice(ri,1);
   render();
 }
-
 function deleteMonth(mid) {
   if (!confirm('ลบเดือนนี้?')) return;
-  const idx = DATA.findIndex(m => m.id === mid);
-  if (idx !== -1) DATA.splice(idx, 1);
+  DATA.months = DATA.months.filter(m=>m.id!==mid);
   render();
 }
-
 function changeType(mid, ri, newType) {
-  const month = DATA.find(m => m.id === mid);
-  if (!month) return;
-  month.rows[ri].type = newType;
-  // auto-set note defaults
-  if (newType === 'ot' && !month.rows[ri].note) month.rows[ri].note = 'OT';
-  if (newType === 'half' && !month.rows[ri].note) month.rows[ri].note = 'ครึ่งวัน';
-  if (newType === 'paid' && !month.rows[ri].note) month.rows[ri].note = 'จ่ายแล้ว';
+  const r = DATA.months.find(m=>m.id===mid).rows[ri];
+  r.type = newType;
+  if (newType==='ot' && !r.note) r.note = 'OT';
+  if (newType==='half' && !r.note) r.note = 'ครึ่งวัน';
+  if (newType==='paid' && !r.note) r.note = 'จ่ายแล้ว';
   render();
 }
-
 function addRow(mid) {
-  const month = DATA.find(m => m.id === mid);
-  if (!month) return;
-  const date = document.getElementById(`add-date-${mid}`).value.trim();
-  const desc = document.getElementById(`add-desc-${mid}`).value.trim();
-  const note = document.getElementById(`add-note-${mid}`).value.trim();
-  const type = document.getElementById(`add-type-${mid}`).value;
-  if (!date) { alert('กรุณาระบุวันที่'); return; }
-  month.rows.push({ date, desc: desc || 'บ่อขยะ สหรุ่งเรือง', type, note });
+  const date  = document.getElementById('ad-'+mid).value.trim();
+  const desc  = document.getElementById('adesc-'+mid).value.trim();
+  const type  = document.getElementById('atype-'+mid).value;
+  const note  = type==='ot'?'OT':type==='half'?'ครึ่งวัน':type==='paid'?'จ่ายแล้ว':'';
+  if (!date) { showToast('กรุณาระบุวันที่','err'); return; }
+  DATA.months.find(m=>m.id===mid).rows.push({date,desc:desc||'บ่อขยะ สหรุ่งเรือง',type,note});
   render();
 }
-
 function addMonth() {
-  const id = 'm' + Date.now();
-  DATA.push({ id, title: 'เดือนใหม่', note: '', rows: [] });
+  const id = 'm'+Date.now();
+  DATA.months.push({id, title:'เดือนใหม่', note:'', rows:[]});
   render();
   setTimeout(() => {
-    const sections = document.querySelectorAll('.month-section');
-    sections[sections.length-1]?.scrollIntoView({ behavior:'smooth', block:'center' });
+    document.querySelectorAll('.month-section').forEach((el,i,arr)=>{
+      if (i===arr.length-1) el.scrollIntoView({behavior:'smooth',block:'center'});
+    });
   }, 100);
 }
 
 function recalcAll() {
   let grand = 0;
-  const monthTotals = [];
-  DATA.forEach(month => {
-    const sub = month.rows.reduce((s, r) => s + rowAmount(r.type), 0);
+  const parts = [];
+  DATA.months.forEach(m => {
+    const sub = m.rows.reduce((s,r)=>s+rowAmt(r.type),0);
     grand += sub;
-    monthTotals.push(`${month.title} ${fmt(sub)} บ.`);
+    parts.push(`${m.title} ${fmt(sub)}`);
   });
   document.getElementById('grand-total-display').textContent = fmt(grand);
-  document.getElementById('gt-breakdown').textContent = monthTotals.join('  |  ');
+  document.getElementById('gt-breakdown').textContent = parts.join('  |  ');
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-render();
+// ════════════════════════════════════════════════════════════
+//  GOOGLE SHEETS SYNC
+// ════════════════════════════════════════════════════════════
+function collectData() {
+  // Collect latest from DOM before saving
+  ['payto','plate','loc','rate','period','date'].forEach(id => {
+    const el = document.getElementById('meta-'+id);
+    if (el) DATA.meta[id] = el.innerText.trim();
+  });
+  return DATA;
+}
+
+async function loadData() {
+  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    setSyncStatus('err', 'ยังไม่ได้ตั้งค่า SCRIPT_URL — ใช้ข้อมูล default');
+    return;
+  }
+  setSyncStatus('loading', 'กำลังโหลดข้อมูล...');
+  try {
+    const res = await fetch(SCRIPT_URL + '?method=GET', { cache: 'no-cache' });
+    const json = await res.json();
+    if (json.ok && json.data) {
+      DATA = json.data;
+      applyMeta();
+      render();
+      const d = json.updated_at ? new Date(json.updated_at).toLocaleString('th-TH') : '–';
+      setSyncStatus('ok', `อัพเดทล่าสุด: ${d}`);
+    } else {
+      setSyncStatus('ok', 'ใช้ข้อมูล default (ยังไม่เคย save)');
+    }
+  } catch(e) {
+    setSyncStatus('err', 'โหลดไม่สำเร็จ – ใช้ข้อมูล default');
+  }
+}
+
+async function saveData() {
+  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    showToast('⚠️ ยังไม่ได้ตั้งค่า SCRIPT_URL', 'err');
+    return;
+  }
+  const payload = collectData();
+  setSyncStatus('loading', 'กำลังบันทึก...');
+  showToast('⏳ กำลังบันทึก...', 'ok');
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ password: PASSWORD, data: payload })
+    });
+    const json = await res.json();
+    if (json.ok) {
+      const d = new Date().toLocaleString('th-TH');
+      setSyncStatus('ok', `บันทึกแล้ว: ${d}`);
+      showToast('✅ บันทึกสำเร็จ – ทุกคนเห็นทันที', 'ok');
+    } else {
+      setSyncStatus('err', 'บันทึกไม่สำเร็จ');
+      showToast('❌ บันทึกไม่สำเร็จ', 'err');
+    }
+  } catch(e) {
+    setSyncStatus('err', 'เชื่อมต่อไม่ได้');
+    showToast('❌ เชื่อมต่อไม่ได้', 'err');
+  }
+}
+
+function applyMeta() {
+  if (!DATA.meta) return;
+  Object.entries(DATA.meta).forEach(([k,v]) => {
+    const el = document.getElementById('meta-'+k);
+    if (el) el.innerText = v;
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════════
+async function init() {
+  render();
+  await loadData();
+  document.getElementById('loading-screen').style.display = 'none';
+}
+init();
 </script>
 </body>
 </html>
